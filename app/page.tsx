@@ -25,7 +25,7 @@ export default function Home() {
         {/* Main News Feed */}
         <section className="py-8 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
-            <News category="general" country="us" pageSize={12} apiKey={apiKey} />
+            <News category="general" country="us" pageSize={12} />
           </div>
         </section>
       </main>
