@@ -106,58 +106,62 @@ const Dashboard = () => {
     headers: { Authorization: `Bearer ${token}` } 
   } : {};
 
-  // FETCH DASHBOARD
   const fetchDashboard = useCallback(async () => {
     try {
+      setLoading(true);
+
+      // Not logged in → just show UI
       if (!token) {
-        router.push("/auth");
+        setData({
+          user: {},
+          liked: [],
+          saved: [],
+          viewed: [],
+          categories: [],
+        });
         return;
       }
-      setLoading(true);
-      const res = await api.get("/api/dashboard/full", apiHeaders);
+
+      const res = await api.get("/api/dashboard/full", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
       const dashboardData = res.data as DashboardData;
       const customCategories = dashboardData.categories || [];
 
-      // Process articles to add categories
       const allArticles = [
         ...(dashboardData.liked || []),
         ...(dashboardData.saved || []),
-        ...(dashboardData.viewed || [])
+        ...(dashboardData.viewed || []),
       ];
 
       allArticles.forEach((article) => {
-        if (!article.categories) {
-          article.categories = [];
-        }
-        
-        const categories = article.categories; // Now TypeScript knows it's not undefined
-        
+        article.categories ??= [];
+
         customCategories.forEach((cat) => {
           if (
             cat.articles?.includes(article._id as string) ||
             cat.articles?.includes(article.articleId as string) ||
             cat.articles?.includes(article.newsUrl)
           ) {
-            const categoryAlreadyExists = categories.some((c) => {
-              const categoryId = typeof c === "string" ? c : c._id;
-              return categoryId === cat._id;
-            });
-
-            if (!categoryAlreadyExists) {
-              categories.push({ _id: cat._id, name: cat.name });
+            if (!article.categories!.some(c =>
+              (typeof c === "string" ? c : c._id) === cat._id
+            )) {
+              article.categories!.push({ _id: cat._id, name: cat.name });
             }
           }
         });
       });
 
       setData(dashboardData);
-    } catch (err: any) {
-      console.error("Error fetching dashboard:", err?.response?.data || err?.message);
-      router.push("/auth");
+    } catch (err) {
+      console.error("Error fetching dashboard:", err);
     } finally {
       setLoading(false);
     }
-  }, [token, router]);
+  }, [token]);
+
+
 
   useEffect(() => {
     fetchDashboard();
