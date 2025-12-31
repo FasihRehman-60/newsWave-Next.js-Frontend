@@ -8,12 +8,11 @@ import React, {
 } from "react";
 import { Article } from "@/types/article";
 
-export interface SearchBarProps {
-  apiKey: string;
-  onResults: (articles: Article[], query: string) => void;
+interface SearchBarProps {
+  onResults: (results: Article[], query: string) => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ apiKey, onResults }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ onResults }) => {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Article[]>([]);
   const [loading, setLoading] = useState(false);
@@ -32,7 +31,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ apiKey, onResults }) => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // Keyboard navigation
@@ -42,7 +42,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ apiKey, onResults }) => {
     if (e.key === "ArrowDown") {
       setActiveIndex((prev) => (prev + 1) % suggestions.length);
     } else if (e.key === "ArrowUp") {
-      setActiveIndex((prev) => (prev - 1 + suggestions.length) % suggestions.length);
+      setActiveIndex(
+        (prev) => (prev - 1 + suggestions.length) % suggestions.length
+      );
     } else if (e.key === "Enter") {
       e.preventDefault();
       const selected =
@@ -74,10 +76,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ apiKey, onResults }) => {
       setLoading(true);
       lastQueryRef.current = keyword;
 
-      const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(
-        keyword
-      )}&pageSize=5&apiKey=${apiKey}`;
-
+      // Call server API instead of NewsAPI directly
+      const url = `/api/news?q=${encodeURIComponent(keyword)}&pageSize=5`;
       const res = await fetch(url, { signal: controllerRef.current.signal });
       const data = await res.json();
 
@@ -101,10 +101,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ apiKey, onResults }) => {
     setHasSearched(true);
 
     try {
-      const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(
-        keyword
-      )}&pageSize=10&apiKey=${apiKey}`;
-
+      const url = `/api/news?q=${encodeURIComponent(keyword)}&pageSize=10`;
       const res = await fetch(url);
       const data = await res.json();
 
@@ -146,7 +143,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ apiKey, onResults }) => {
         />
 
         {loading && (
-          <div className="absolute right-4 top-3 text-gray-400 animate-pulse">⏳</div>
+          <div className="absolute right-4 top-3 text-gray-400 animate-pulse">
+            ⏳
+          </div>
         )}
         {!loading && query.trim().length > 0 && (
           <button

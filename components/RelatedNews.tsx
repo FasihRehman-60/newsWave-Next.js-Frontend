@@ -2,11 +2,10 @@
 import React, { useEffect, useState } from "react";
 import NewsItem from "./NewsItem";
 import { Loader2 } from "lucide-react";
-import { Article } from "@/types/article"; 
+import { Article } from "@/types/article";
 
 interface RelatedNewsProps {
   keyword: string;
-  apiKey: string;
   searchResults?: Article[];
   compact?: boolean;
   excludeUrls?: string[];
@@ -17,13 +16,13 @@ const truncateText = (text: string, maxLength: number): string =>
 
 const RelatedNews: React.FC<RelatedNewsProps> = ({
   keyword,
-  apiKey,
   searchResults = [],
   compact = false,
+  excludeUrls = [],
 }) => {
   const [related, setRelated] = useState<Article[]>([]);
   const [loading, setLoading] = useState(false);
-  const existingUrls = searchResults.map((a) => a.url);
+  const existingUrls = [...searchResults.map((a) => a.url), ...excludeUrls];
 
   useEffect(() => {
     if (!keyword) return;
@@ -31,11 +30,11 @@ const RelatedNews: React.FC<RelatedNewsProps> = ({
     const fetchRelated = async () => {
       setLoading(true);
       try {
+        // Convert keyword to OR search
         const query = keyword.split(" ").join(" OR ");
-        const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(
-          query
-        )}&sortBy=relevancy&pageSize=20&language=en&apiKey=${apiKey}`;
 
+        // Fetch from server API route instead of NewsAPI directly
+        const url = `/api/news?q=${encodeURIComponent(query)}&pageSize=20`;
         const res = await fetch(url);
         const data = await res.json();
 
@@ -45,13 +44,14 @@ const RelatedNews: React.FC<RelatedNewsProps> = ({
           return;
         }
 
-        // ✅ Cast to Article[]
         const fetchedArticles: Article[] = data.articles as Article[];
 
+        // Filter out existing URLs
         const filtered = fetchedArticles.filter(
           (a) => !existingUrls.includes(a.url)
         );
 
+        // Remove duplicates
         const unique = Array.from(
           new Map(filtered.map((a) => [a.url, a])).values()
         );
@@ -65,7 +65,7 @@ const RelatedNews: React.FC<RelatedNewsProps> = ({
     };
 
     fetchRelated();
-  }, [keyword, apiKey, existingUrls]);
+  }, [keyword, existingUrls]);
 
   if (loading) {
     return (

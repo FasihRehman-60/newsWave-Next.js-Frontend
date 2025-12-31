@@ -5,13 +5,12 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import NewsItem from "./NewsItem";
 import SearchBar from "./SearchBar";
 import RelatedNews from "./RelatedNews";
-import { Article } from "@/types/article"; // ✅ shared type
+import { Article } from "@/types/article";
 
 interface NewsProps {
   country?: string;
   pageSize?: number;
   category: string;
-  apiKey: string;
   setProgress?: (progress: number) => void;
 }
 
@@ -20,9 +19,7 @@ function capitalize(s: string): string {
 }
 
 const isTrending = (article: Article): boolean => {
-  const text = `${article.title || ""} ${article.description || ""} ${
-    article.source?.name || ""
-  }`.toLowerCase();
+  const text = `${article.title || ""} ${article.description || ""} ${article.source?.name || ""}`.toLowerCase();
 
   const hotWords = [
     "breaking",
@@ -45,7 +42,6 @@ const News: React.FC<NewsProps> = ({
   country = "us",
   pageSize = 8,
   category = "general",
-  apiKey,
   setProgress,
 }) => {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -54,11 +50,12 @@ const News: React.FC<NewsProps> = ({
   const [searchActive, setSearchActive] = useState(false);
   const [lastQuery, setLastQuery] = useState("");
 
+  // Fetch news via server-side API route
   const fetchPage = async (p = 1) => {
     try {
       setProgress?.(20);
 
-      const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=${apiKey}&page=${p}&pageSize=${pageSize}`;
+      const url = `/api/news?country=${country}&category=${category}&page=${p}&pageSize=${pageSize}`;
       const res = await fetch(url);
       setProgress?.(60);
 
@@ -86,7 +83,7 @@ const News: React.FC<NewsProps> = ({
     setPage(1);
     fetchPage(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category, country, apiKey]);
+  }, [category, country]);
 
   const fetchMoreData = async () => {
     if (searchActive) return;
@@ -115,7 +112,7 @@ const News: React.FC<NewsProps> = ({
 
   return (
     <section className="px-3 sm:px-6 lg:px-10 mt-4 sm:mt-6">
-      <SearchBar apiKey={apiKey} onResults={handleSearchResults} />
+      <SearchBar onResults={handleSearchResults} />
 
       <h1 className="text-center font-bold tracking-tight text-gray-900 text-xl sm:text-2xl lg:text-3xl mt-4 mb-6">
         {capitalize(category)} Headlines
@@ -158,7 +155,6 @@ const News: React.FC<NewsProps> = ({
 
             <RelatedNews
               keyword={lastQuery}
-              apiKey={apiKey}
               excludeUrls={articles.map((a) => a.url)}
             />
           </div>

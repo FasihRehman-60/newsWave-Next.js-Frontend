@@ -2,36 +2,20 @@
 import React, { useState, useEffect } from "react";
 import SearchBar from "./SearchBar";
 import NewsItem from "./NewsItem";
+import { Article } from "@/types/article";
 
-interface Article {
-  title: string;
-  description: string;
-  url: string;
-  urlToImage: string;
-  author: string;
-  publishedAt: string;
-  source: {
-    name: string;
-  };
-  [key: string]: any; // for extra properties
-}
-
-interface NewsFeedProps {
-  apiKey: string;
-}
-
-const NewsFeed: React.FC<NewsFeedProps> = ({ apiKey }) => {
+const NewsFeed: React.FC = () => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
+  // Fetch top headlines from server API
   const fetchArticles = async () => {
     setLoading(true);
     try {
-      const res = await fetch(
-        `https://newsapi.org/v2/top-headlines?country=us&pageSize=20&apiKey=${apiKey}`
-      );
+      const res = await fetch("/api/news?country=us&pageSize=20");
       const data = await res.json();
+
       if (data.articles) {
         setArticles(data.articles);
         setFilteredArticles(data.articles);
@@ -45,7 +29,7 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ apiKey }) => {
 
   useEffect(() => {
     fetchArticles();
-  }, [apiKey]);
+  }, []);
 
   const handleSearchResults = (results: Article[], query?: string) => {
     setFilteredArticles(results);
@@ -53,7 +37,8 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ apiKey }) => {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-10 py-6">
-      <SearchBar apiKey={apiKey} onResults={handleSearchResults} />
+      <SearchBar onResults={handleSearchResults} />
+
       {loading ? (
         <p className="text-center text-gray-500 mt-10">Loading articles...</p>
       ) : filteredArticles.length === 0 ? (
@@ -65,10 +50,10 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ apiKey }) => {
               key={article.url || `article-${idx}`}
               title={article.title}
               description={article.description}
-              imageUrl={article.urlToImage} // map to expected prop
-              newsUrl={article.url}         // map to expected prop
+              imageUrl={article.urlToImage}
+              newsUrl={article.url}
               author={article.author}
-              date={article.publishedAt}    // map to expected prop
+              date={article.publishedAt}
               source={article.source?.name}
             />
           ))}
