@@ -12,7 +12,7 @@ export default async function CategoryPage({ params }: { params: { name: string 
       <main className="grow py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           
-          <News category={category} country="us" pageSize={12} apiKey={apiKey} />
+          <News category={category} country="us" pageSize={12} />
         </div>
       </main>
     </div>
