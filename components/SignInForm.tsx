@@ -70,7 +70,7 @@ function SignInForm() {
   };
 
   return (
-    <div className="w-full max-w-md sm:max-w-lg mx-auto bg-white shadow-md rounded-xl p-6 sm:p-8 md:p-10 mt-5 mb-5">
+    <div className="w-full max-w-md sm:max-w-lg mx-auto bg-white shadow-md rounded-xl p-6 sm:p-8 md:p-10">
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-900 mb-6 sm:mb-8">
         Welcome Back
       </h2>

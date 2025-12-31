@@ -9,7 +9,7 @@ const AuthSlider = () => {
   const toggleForm = () => setIsSignUp((prev) => !prev);
 
   return (
-    <div className="flex items-center justify-center w-full min-h-screen px-4 py-8 bg-gray-50">
+    <div className="flex items-center justify-center w-full px-4 py-0 bg-gray-50 mt-10">
       <div className="relative w-full max-w-5xl bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row min-h-650px md:min-h-500px">
         {/* Left Side Panel (Hidden on Mobile) */}
         <div className="hidden md:flex flex-col justify-center items-center w-full md:w-1/2 p-10 text-center bg-linear-to-br from-amber-400 to-amber-600 text-white">

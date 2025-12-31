@@ -7,23 +7,38 @@ const AuthPage = () => {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-r from-amber-50 to-gray-100 relative px-4">
-      <button
-        onClick={() => router.push("/")}
-        className="absolute top-3 left-4 px-4 py-2 bg-amber-500 text-white rounded-md text-sm font-medium shadow-md hover:bg-amber-400 transition-all duration-200"
-      >
-        ← Return to Home
-      </button>
+   <div className="min-h-screen bg-linear-to-r from-amber-50 to-gray-100 flex flex-col items-center px-3 sm:px-4 pt-8 sm:pt-10">
 
-      <div className="text-center">
-        <div className="flex items-center justify-center space-x-1">
-          <h3 className="text-3xl md:text-4xl font-extrabold text-gray-600 mt-0 mb-0 leading-tight">
-            <span className="text-gray-900">News</span>
-            <span className="text-amber-500">Wave</span>
-          </h3>
-        </div>
+      {/* Logo */}
+      <h1 className="mb-3 text-3xl sm:text-4xl font-extrabold">
+        <span className="text-gray-900">News</span>
+        <span className="text-amber-500">Wave</span>
+      </h1>
+
+      {/* Auth Card Wrapper */}
+      <div className="relative w-full max-w-4xl">
+        
+        {/* Return Button */}
+        <button
+          onClick={() => router.push("/")}
+          className="
+            absolute top-2 left-4
+            sm:top-3 sm:left-6
+            px-3 py-1.5 sm:px-4 sm:py-2
+            bg-amber-500 text-white
+            rounded-md text-sm sm:text-base
+            font-medium shadow-lg
+            hover:bg-amber-400 transition
+            z-10
+          "
+        >
+          ← Return
+        </button>
+
+        {/* Auth Slider */}
+        <AuthSlider />
       </div>
-      <AuthSlider />
+
     </div>
   );
 };
